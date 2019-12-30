@@ -1,0 +1,22 @@
+{
+  "name": "opz-parser",
+  "version": "0.0.0",
+  "description": "opz-parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvgenyGulyaev/OPZ.git"
+  },
+  "keywords": [
+    "Обратная польская запись"
+  ],
+  "author": "Evgeny Gulyaev (wardercompany@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EvgenyGulyaev/OPZ/issues"
+  },
+  "homepage": "https://github.com/EvgenyGulyaev/OPZ#readme"
+}
