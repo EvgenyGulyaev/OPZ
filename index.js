@@ -27,6 +27,7 @@ class OPZ {
     this.stack = [];
     this.isContinue = false;
     this.value = 0;
+    this.mayHaveChar = false;
     this.mayChangeSign = true;
   }
 
@@ -89,14 +90,22 @@ class OPZ {
           }
         }
 
-        if (this.input[i] === '(' || Object.keys(op).includes(this.input[i])) this.mayChangeSign = true;
+        if (this.input[i] === '(' || Object.keys(op)
+        .includes(this.input[i])) this.mayChangeSign = true;
+
+        if (!Object.keys(op).includes(this.input[i]) && this.input[i] !== '(') {
+          this.mayHaveChar = true;
+          this.result.push(this.input[i]);
+          continue;
+        }
 
         this.stack.push(this.input[i]);
         this.isContinue = this.input[i] === '.';
       }
+
       this.result = [...this.result, ...this.stack.reverse()];
       this.stack = [];
-      return this.result.join('');
+      return this.result;
     }
     catch (e) {
       this.setInitialValue();
@@ -105,27 +114,39 @@ class OPZ {
 
   }
 
-  getOpzValue(opzStr = '') {
-    if (!opzStr) opzStr = this.result;
+  replaceVariable(arr = [], vars = {}) {
+    const keys = Object.keys(vars);
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = keys.includes(arr[i]) ? `${vars[arr[i]]}` : arr[i];
+    }
+    return arr;
+  }
+
+  getOpzValue(opzArr = [], vars = {}) {
+    if (!opzArr.length) opzArr = this.result;
+    if (Object.keys(vars).length) {
+      opzArr = this.replaceVariable(opzArr, vars);
+    }
+
     this.stack = [];
     const opKeys = Object.keys(operators);
 
-    for (let i = 0; i < opzStr.length; i++) {
-      if (opKeys.includes(opzStr[i])) {
-        if (opzStr[i] !== 'sqrt') {
+    for (let i = 0; i < opzArr.length; i++) {
+      if (opKeys.includes(opzArr[i])) {
+        if (opzArr[i] !== 'sqrt') {
           let [y, x] = [this.stack.pop(), this.stack.pop()];
-          this.stack.push(operators[opzStr[i]](x, y));
+          this.stack.push(operators[opzArr[i]](x, y));
           continue;
         }
         let [x] = [this.stack.pop()];
-        this.stack.push(operators[opzStr[i]](x));
+        this.stack.push(operators[opzArr[i]](x));
         continue;
       }
-      this.stack.push(parseFloat(opzStr[i]));
+      this.stack.push(parseFloat(opzArr[i]));
     }
     this.value = this.stack.pop();
+    return this.value;
   }
-
 }
 
 module.exports = new OPZ();
