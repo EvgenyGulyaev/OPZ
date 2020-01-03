@@ -7,6 +7,12 @@ const op = {
   // 'sqrt': 3, -> Memory
 };
 
+const sqrt = {
+  'q': 's',
+  'r': 'sq',
+  't': 'sqr'
+};
+
 const operators = {
   '+': (x, y) => x + y,
   '-': (x, y) => x - y,
@@ -17,9 +23,9 @@ const operators = {
 };
 
 Object.defineProperty(Array.prototype, 'flat', {
-  value: function(depth = 1) {
+  value: function (depth = 1) {
     return this.reduce(function (flat, toFlatten) {
-      return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+      return flat.concat((Array.isArray(toFlatten) && (depth > 1)) ? toFlatten.flat(depth - 1) : toFlatten);
     }, []);
   }
 });
@@ -35,7 +41,6 @@ class OPZ {
     this.stack = [];
     this.isContinue = false;
     this.value = 0;
-    this.mayHaveChar = false;
     this.mayChangeSign = true;
   }
 
@@ -44,15 +49,15 @@ class OPZ {
     this.result.push(operand);
   }
 
-  getValue(str) {
-    this.getOPZformat(str);
-    this.getOpzValue();
-    return this.value;
+  getValue(str, vars = {}) {
+    const opzArr = this.getOPZformat(str);
+    return this.getOpzValue(opzArr, vars);
   }
 
   getOPZformat(str) {
+    this.setInitialValue();
     try {
-      this.input = str.replace(/\s+/g, '');
+      this.input = str.replace(/\s+/g, '').toLowerCase();
       for (let i = 0; i < this.input.length; i++) {
 
         if (this.input[i] === '.') {
@@ -62,7 +67,13 @@ class OPZ {
           continue;
         }
 
-        if (['q', 'r', 't'].includes(this.input[i])) {
+        if (this.input[i] === 's') {
+          this.stack.push(this.input[i]);
+          continue;
+        }
+
+        if (Object.keys(sqrt)
+        .includes(this.input[i]) && this.stack[this.stack.length - 1] === sqrt[this.input[i]]) {
           this.stack[this.stack.length - 1] += this.input[i];
           continue;
         }
@@ -74,6 +85,7 @@ class OPZ {
             continue;
           }
           this.result.push(this.input[i]);
+          this.isContinue = true;
           continue;
         }
 
@@ -102,7 +114,6 @@ class OPZ {
         .includes(this.input[i])) this.mayChangeSign = true;
 
         if (!Object.keys(op).includes(this.input[i]) && this.input[i] !== '(') {
-          this.mayHaveChar = true;
           this.result.push(this.input[i]);
           continue;
         }
@@ -132,12 +143,13 @@ class OPZ {
 
   getOpzValue(opzArr = [], vars = {}) {
     if (!opzArr.length) opzArr = this.result;
-    this.result = [];
+
+    this.setInitialValue();
+
     if (Object.keys(vars).length) {
       opzArr = this.replaceVariable(opzArr, vars);
     }
 
-    this.stack = [];
     const opKeys = Object.keys(operators);
 
     for (let i = 0; i < opzArr.length; i++) {
