@@ -16,6 +16,14 @@ const operators = {
   'sqrt': (x) => Math.sqrt(x),
 };
 
+Object.defineProperty(Array.prototype, 'flat', {
+  value: function(depth = 1) {
+    return this.reduce(function (flat, toFlatten) {
+      return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+    }, []);
+  }
+});
+
 class OPZ {
   constructor() {
     this.setInitialValue()
@@ -105,7 +113,7 @@ class OPZ {
 
       this.result = [...this.result, ...this.stack.reverse()];
       this.stack = [];
-      return this.result;
+      return [...this.result];
     }
     catch (e) {
       this.setInitialValue();
@@ -124,6 +132,7 @@ class OPZ {
 
   getOpzValue(opzArr = [], vars = {}) {
     if (!opzArr.length) opzArr = this.result;
+    this.result = [];
     if (Object.keys(vars).length) {
       opzArr = this.replaceVariable(opzArr, vars);
     }
@@ -145,6 +154,7 @@ class OPZ {
       this.stack.push(parseFloat(opzArr[i]));
     }
     this.value = this.stack.pop();
+    this.stack = [];
     return this.value;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "opz-parser",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "opz-parser",
   "main": "index.js",
   "scripts": {
