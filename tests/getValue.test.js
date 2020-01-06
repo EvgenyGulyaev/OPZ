@@ -32,3 +32,30 @@ test('simple check error in sqrt op', () => {
   expect(opz.getValue('sQT(X^x)', { x: 4 })).toBe(NaN);
 });
 
+test('simple check unary -', () => {
+  expect(opz.getValue('-4 + 11 - 21 + 16',)).toBe(2);
+});
+
+test('simple check unary - after (', () => {
+  expect(opz.getValue('-2 + (-4 + 11 - 21 + 16)',)).toBe(0);
+});
+
+test('simple check unary - after operators', () => {
+  expect(opz.getValue('-2 + -2',)).toBe(-4);
+});
+
+test('2 or more (', () => {
+  expect(opz.getValue('(4+(-2 + -2))',)).toBe(0);
+});
+
+test('2 or more ( without )', () => {
+  expect(opz.getValue('(4+(-2 + -2)',)).toBe(NaN);
+});
+
+test('-number from sqrt', () => {
+  expect(opz.getValue('sqrt(-9)',)).toBe(NaN);
+});
+
+test('number from sqrt without ()', () => {
+  expect(opz.getValue('sqrt 4+(-2 + -2)',)).toBe(0);
+});
